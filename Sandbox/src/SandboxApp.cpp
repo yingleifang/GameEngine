@@ -10,8 +10,6 @@ public:
 	}
 };
 
-int main() {
-	Sandbox* sandbox = new Sandbox();
-	sandbox->Print();
-	delete sandbox;
+Engine::Application* Engine::CreateApplication() {
+	return new Sandbox();
 }

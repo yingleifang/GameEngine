@@ -4,7 +4,8 @@
 
 extern Engine::Application* Engine::CreateApplication();
 int main(int argc, char** argv) {
-	printf("Engine running");
+	Engine::Log::Init();
+	ENGINE_TRACE("Initialized Log");
 	auto app = Engine::CreateApplication();
 	app->Run();
 	delete app;
