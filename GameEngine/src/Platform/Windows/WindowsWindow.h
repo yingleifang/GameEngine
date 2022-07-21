@@ -26,7 +26,7 @@ namespace Engine {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
-
+		
 		struct WindowData
 		{
 			std::string Title;
