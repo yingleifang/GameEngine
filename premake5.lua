@@ -1,5 +1,6 @@
 workspace "GameEngine"
     architecture "x64"
+    startproject "Sandbox"
 
     configurations{
         "Debug",
@@ -13,6 +14,7 @@ IncludeDir = {}
 IncludeDir['GLFW'] = "GameEngine/vendor/GLFW/include"
 IncludeDir['Glad'] = "GameEngine/vendor/Glad/include"
 IncludeDir['ImGui'] = "GameEngine/vendor/imgui"
+IncludeDir['glm'] = "GameEngine/vendor/glm"
 
 include "GameEngine/vendor/GLFW"
 include "GameEngine/vendor/Glad"
@@ -20,8 +22,10 @@ include "GameEngine/vendor/imgui"
 
 project "GameEngine"
     location "GameEngine"    
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" ..outputdir.. "/%{prj.name")
     objdir ("bin-int/" ..outputdir.. "/%{prj.name}")
@@ -32,6 +36,8 @@ project "GameEngine"
     files{
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/glm/glm/**.hpp",
+        "%{prj.name}/vendor/glm/glm/**.inl",
     }
 
     includedirs{
@@ -40,7 +46,8 @@ project "GameEngine"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
-    }
+        "%{IncludeDir.glm}",
+        }
 
     links{
         "GLFW",
@@ -50,8 +57,6 @@ project "GameEngine"
     }
 
     filter "system:windows"
-        cppdialect "c++17"
-        staticruntime "On"
         systemversion "latest"
         defines{
             "ENGINE_PLATFORM_WINDOWS",
@@ -59,29 +64,28 @@ project "GameEngine"
             "GLFW_INCLUDE_NONE"
         }
 
-        postbuildcommands{
-            ("{COPY} %{cfg.buildtarget.relpath} \" ../bin/" ..outputdir.. "/Sandbox/\"")
-        }
 
     filter "configurations:Debug"
         defines "ENGIEN_DEBUG"
         runtime "Debug"
-        symbols "On"
+        symbols "on"
 
     filter "configurations:Release"
         defines "ENGIEN_RELEASE"
         runtime "Release"
-        optimize "On"
+        optimize "on"
 
     filter "configurations:Dist"
         defines "ENGINE_DIST"
-        buildoptions "/MD"
-        optimize "On"
+        runtime "Release"
+        optimize "on"
     
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" ..outputdir.. "/%{prj.name")
     objdir ("bin-int/" ..outputdir.. "/%{prj.name}")
@@ -93,7 +97,9 @@ project "Sandbox"
 
     includedirs{
         "GameEngine/vendor/spdlog/include",
-        "GameEngine/src"
+        "GameEngine/src",
+        "GameEngine/vendor",
+        "%{IncludeDir.glm}",
     }
 
     links{
@@ -101,8 +107,6 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "c++17"
-        staticruntime "On"
         systemversion "latest"
         defines{
             "ENGINE_PLATFORM_WINDOWS",
@@ -111,17 +115,14 @@ project "Sandbox"
     filter "configurations:Debug"
         defines "ENGIEN_DEBUG"
         runtime "Debug"
-        symbols "On"
+        symbols "on"
 
     filter "configurations:Release"
         defines "ENGIEN_RELEASE"
         runtime "Release"
-        optimize "On"
+        optimize "on"
 
     filter "configurations:Dist"
         defines "ENGINE_DIST"
         runtime "Release"
-        optimize "On"
-
-    staticruntime "off"
-    runtime "Debug"
+        optimize "on"
