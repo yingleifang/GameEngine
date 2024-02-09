@@ -13,6 +13,8 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/OrthographicCamera.h"
 
+#include "Engine/Core/Timestep.h"
+
 namespace Engine {
 	class ENGINE_API Application
 	{
@@ -34,14 +36,11 @@ namespace Engine {
 
 		bool m_Running = true;
 		LayerStack m_LayerStack;
+		float m_LastFrameTime = 0.0f;
 
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		std::shared_ptr<VertexArray> m_VertexArray;
+	private:
 		static Application* s_Instance;
 
-		OrthographicCamera m_Camera;
 	};
 
 	Application* CreateApplication();
