@@ -17,13 +17,28 @@ namespace Engine {
 		m_Width = width;
 		m_Height = height;
 
+		GLenum m_InternalFormat = 0, m_DataFormat = 0;
+
+		if (channels == 4)
+		{
+			m_InternalFormat = GL_RGBA8;
+			m_DataFormat = GL_RGBA;
+		}
+		else if (channels == 3)
+		{
+			m_InternalFormat = GL_RGB8;
+			m_DataFormat = GL_RGB;
+		}
+
+		ENGINE_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Format not supported!");
+
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, GL_RGB8, m_Width, m_Height);
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
 	}

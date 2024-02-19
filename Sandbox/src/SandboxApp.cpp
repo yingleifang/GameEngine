@@ -1,14 +1,14 @@
 #include <Engine.h>
-
+#include <Engine/Core/EntryPoint.h>
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "ImGui/imgui.h"
 #include <glm/ext/matrix_transform.hpp>
-
+#include "Sandbox2d.h"
 class ExampleLayer : public Engine::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-2.0f, 2.0f, -2.0f, 2.0f), m_CameraPosition(0.0f, 0.0f, 0.0f), m_SquarePosition(0.0f)
+		: Layer("Example"), m_CameraController(1280.0f/720.0f)
 	{
 		m_VertexArray = Engine::VertexArray::Create();
 
@@ -88,7 +88,7 @@ public:
 			}
 		)";
 
-		m_Shader.reset(Engine::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = Engine::Shader::Create("TriangleColor", vertexSrc, fragmentSrc);
 
 		std::string flatColorShaderVertexSrc = R"(
 			#version 330 core
@@ -122,82 +122,27 @@ public:
 			}
 		)";
 
-		m_FlatColorShader.reset(Engine::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+		m_FlatColorShader = Engine::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
-		std::string textureShaderVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
+		m_Texture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_ChessPieceTexture = Engine::Texture2D::Create("assets/textures/ChernoLogo.png");
 
-			out vec2 v_TexCoord;
-
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
-			}
-		)";
-
-		std::string textureShaderFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-			
-			uniform sampler2D u_Texture;
-
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			} 
-		)";
-
-		m_TextureShader.reset(Engine::Shader::Create(textureShaderVertexSrc, textureShaderFragmentSrc));
-
-		m_Texture = Engine::Texture2D::Create("assets/textures/grass.png");
-
-		std::dynamic_pointer_cast<Engine::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<Engine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<Engine::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<Engine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(Engine::Timestep ts) override
 	{
-		if (Engine::Input::IsKeyPressed(ENGINE_KEY_LEFT))
-			m_CameraPosition.x += m_CameraSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_RIGHT))
-			m_CameraPosition.x -= m_CameraSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_UP))
-			m_CameraPosition.y -= m_CameraSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_DOWN))
-			m_CameraPosition.y += m_CameraSpeed * ts;
-
-		if (Engine::Input::IsKeyPressed(ENGINE_KEY_Q))
-			m_CameraRotation -= m_CameraRotationSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_E))
-			m_CameraRotation += m_CameraRotationSpeed * ts;;
-
-		if (Engine::Input::IsKeyPressed(ENGINE_KEY_W))
-			m_SquarePosition.y += m_squareMoveSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_S))
-			m_SquarePosition.y -= m_squareMoveSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_A))
-			m_SquarePosition.x -= m_squareMoveSpeed * ts;
-		else if (Engine::Input::IsKeyPressed(ENGINE_KEY_D))
-			m_SquarePosition.x += m_squareMoveSpeed * ts;
+		m_CameraController.OnUpdate(ts);
 
 		Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Engine::RenderCommand::Clear();
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
 
-		Engine::Renderer::BeginScene(m_Camera);
+		Engine::Renderer::BeginScene(m_CameraController.GetCamera());
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_SquarePosition);
+		glm::mat4 transform = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		std::dynamic_pointer_cast<Engine::OpenGLShader>(m_FlatColorShader)->Bind();
 		std::dynamic_pointer_cast<Engine::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
@@ -209,12 +154,17 @@ public:
 			{
 				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Engine::Renderer::Submit(m_SquareVA, m_FlatColorShader, transform);
+				Engine::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 			}
 		}
+		auto textureShader = m_ShaderLibrary.Get("Texture");
+
+		m_ChessPieceTexture->Bind();
+		Engine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_Texture->Bind();
-		Engine::Renderer::Submit(m_SquareVA, m_TextureShader, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Engine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
 
 		Engine::Renderer::EndScene();
 	}
@@ -227,27 +177,21 @@ public:
 
 	void OnEvent(Engine::Event& event) override
 	{
+		m_CameraController.OnEvent(event);
 	}
 
 private:
+	Engine::ShaderLibrary m_ShaderLibrary;
 	std::shared_ptr<Engine::Shader> m_Shader;
 	std::shared_ptr<Engine::VertexArray> m_VertexArray;
-	Engine::OrthographicCamera m_Camera;
 
-	std::shared_ptr<Engine::Texture2D> m_Texture;
+	std::shared_ptr<Engine::Texture2D> m_Texture, m_ChessPieceTexture;
 
-	std::shared_ptr<Engine::Shader> m_FlatColorShader, m_TextureShader;
+	std::shared_ptr<Engine::Shader> m_FlatColorShader;
 	std::shared_ptr<Engine::VertexArray> m_SquareVA;
 
+	Engine::OrthographicCameraController m_CameraController;
 	glm::vec3 m_CameraPosition;
-	float m_CameraSpeed = 2.0f;
-
-	float m_CameraRotation = 0.0f;
-	float m_CameraRotationSpeed = 60.0f;
-
-	float m_squareMoveSpeed = 2.0f;
-
-	glm::vec3 m_SquarePosition;
 
 	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
 };
@@ -256,7 +200,8 @@ private:
 class Sandbox : public Engine::Application {
 public:
 	Sandbox() {
-		PushLayer(new ExampleLayer());
+		//PushLayer(new ExampleLayer());
+		PushLayer(new Sandbox2d());
 	}
 	~Sandbox() {
 
