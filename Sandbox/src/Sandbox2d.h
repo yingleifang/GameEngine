@@ -18,6 +18,8 @@ private:
 	std::shared_ptr<Engine::VertexArray> m_SquareVA;
 	std::shared_ptr<Engine::Shader> m_FlatColorShader;
 
-	glm::vec4 m_SquareColor = { 1.2f, 0.3f, 0.8f, 1.0f };
+	std::shared_ptr<Engine::Texture2D> m_CheckerboardTexture;
+
+	glm::vec4 m_SquareColor = { 0.8f, 0.3f, 0.8f, 1.0f };
 
 };

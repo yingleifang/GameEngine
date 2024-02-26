@@ -13,28 +13,7 @@ Sandbox2d::Sandbox2d()
 
 void Sandbox2d::OnAttach()
 {
-	m_SquareVA = Engine::VertexArray::Create();
-
-	float squareVertices[5 * 4] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
-	};
-
-	std::shared_ptr<Engine::VertexBuffer> squareVB;
-	squareVB.reset(Engine::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-	squareVB->SetLayout({
-		{ Engine::ShaderDataType::Float3, "a_Position" }
-		});
-	m_SquareVA->AddVertexBuffer(squareVB);
-
-	uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-	std::shared_ptr<Engine::IndexBuffer> squareIB;
-	squareIB.reset(Engine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-	m_SquareVA->SetIndexBuffer(squareIB);
-
-	m_FlatColorShader = Engine::Shader::Create("assets/shaders/FlatColor.glsl");
+	m_CheckerboardTexture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
 }
 
 void Sandbox2d::OnDetach()
@@ -51,8 +30,11 @@ void Sandbox2d::OnUpdate(Engine::Timestep ts)
 	Engine::RenderCommand::Clear();
 
 	Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	Engine::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, m_SquareColor);
 
+	//Engine::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+	//Engine::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
+	//Engine::Renderer2D::DrawQuad({ -5.0f, -5.0f, -0.1f }, { 10.0f, 10.0f }, m_CheckerboardTexture, 10.0f);
+	Engine::Renderer2D::DrawRotatedQuad({-2.0f, 0.0f, 0.0f }, { 5.0f, 5.0f }, 45.0f, m_CheckerboardTexture, 20.0f);
 	Engine::Renderer2D::EndScene();
 }
 
