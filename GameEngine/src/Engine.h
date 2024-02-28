@@ -15,6 +15,11 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Renderer2D.h"
 #include "Engine/Renderer/RenderCommand.h"
+#include "Engine/Renderer/Framebuffer.h"
+
+#include "Engine/Scnene/Entity.h"
+#include "Engine/Scnene/Scene.h"
+#include "Engine/Scnene/Components.h"
 
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Buffer.h"

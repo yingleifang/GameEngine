@@ -14,6 +14,19 @@ Sandbox2d::Sandbox2d()
 void Sandbox2d::OnAttach()
 {
 	m_CheckerboardTexture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
+
+	Engine::FramebufferSpecification fbSpec;
+	fbSpec.Width = 1280;
+	fbSpec.Height = 720;
+	//m_Framebuffer = Engine::Framebuffer::Create(fbSpec);
+
+	m_ActiveScene = std::make_shared<Engine::Scene>();
+	ENGINE_INFO(m_ActiveScene.get() == nullptr);
+	auto square = m_ActiveScene->CreateEntity("Green Square");
+
+	square.AddComponent<Engine::SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+	m_SquareEntity = square;
 }
 
 void Sandbox2d::OnDetach()
@@ -22,20 +35,21 @@ void Sandbox2d::OnDetach()
 
 void Sandbox2d::OnUpdate(Engine::Timestep ts)
 {
-	// Update
-	m_CameraController.OnUpdate(ts);
+
 
 	// Render
+	//m_Framebuffer->Bind();
 	Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	Engine::RenderCommand::Clear();
 
 	Engine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-	//Engine::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-	//Engine::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-	//Engine::Renderer2D::DrawQuad({ -5.0f, -5.0f, -0.1f }, { 10.0f, 10.0f }, m_CheckerboardTexture, 10.0f);
-	Engine::Renderer2D::DrawRotatedQuad({-2.0f, 0.0f, 0.0f }, { 5.0f, 5.0f }, 45.0f, m_CheckerboardTexture, 20.0f);
+	// Update scene
+	m_ActiveScene->OnUpdate(ts);
+
 	Engine::Renderer2D::EndScene();
+
+	//m_Framebuffer->Unbind();
 }
 
 void Sandbox2d::OnImGuiRender()
