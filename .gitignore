@@ -3,4 +3,4 @@ bin/
 bin-int/
 Sandbox/assets/textures
 *.user
-vendor/box2d/*
+GameEngine/vendor/box2d/*
