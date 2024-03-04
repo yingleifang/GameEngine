@@ -19,16 +19,19 @@ namespace Engine {
 	class ENGINE_API Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "App");
 		virtual ~Application();
 		void Run();
 		void OnEvent(Event& e);
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
+		void Close();
 
 		inline static Application& Get() { return *s_Instance; }
 
 		inline Window& GetWindow() { return *m_Window; }
+
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

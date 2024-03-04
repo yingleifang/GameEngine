@@ -15,10 +15,10 @@ namespace Engine {
 
 		Application* Application::s_Instance = nullptr;
 
-		Application::Application() {
+		Application::Application(const std::string& name) {
 			ENGINE_CORE_ASSERT(!s_Instance, "Already has app");
 			s_Instance = this;
-			m_Window = std::unique_ptr<Window>(Window::Create());
+			m_Window = Window::Create(WindowProps(name));
 			m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 			Renderer::Init();
@@ -60,14 +60,25 @@ namespace Engine {
 				Timestep timestep = time - m_LastFrameTime;
 				m_LastFrameTime = time;
 
-				if (!m_Minimized) {
-					for (Layer* layer : m_LayerStack)
-						layer->OnUpdate(timestep);
+				if (!m_Minimized)
+				{
+					{
+						ENGINE_PROFILE_SCOPE("LayerStack OnUpdate");
+
+						for (Layer* layer : m_LayerStack)
+							layer->OnUpdate(timestep);
+					}
+
+					m_ImGuiLayer->Begin();
+					{
+						ENGINE_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+						for (Layer* layer : m_LayerStack)
+							layer->OnImGuiRender();
+					}
+					m_ImGuiLayer->End();
 				}
-				m_ImGuiLayer->Begin();
-				for (Layer* layer : m_LayerStack)
-					layer->OnImGuiRender();
-				m_ImGuiLayer->End();
+
 				m_Window->OnUpdate();
 			}
 		}
@@ -90,4 +101,10 @@ namespace Engine {
 			
 			return false;
 		}
+
+		void Application::Close()
+		{
+			m_Running = false;
+		}
+
 }

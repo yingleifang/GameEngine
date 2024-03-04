@@ -20,6 +20,7 @@
 #include "Engine/Scnene/Entity.h"
 #include "Engine/Scnene/Scene.h"
 #include "Engine/Scnene/Components.h"
+#include "Engine/Scnene/ScriptableEntity.h"
 
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Buffer.h"

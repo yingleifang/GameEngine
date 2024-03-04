@@ -30,4 +30,5 @@ private:
 
 	Engine::Entity m_SquareEntity;
 
+	Engine::Entity m_Camera;
 };

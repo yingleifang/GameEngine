@@ -19,6 +19,9 @@
     <Filter Include="src\Engine\Renderer">
       <UniqueIdentifier>{F838018B-649A-DE98-ED07-254B59681558}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Engine\Scnene">
+      <UniqueIdentifier>{3D543FD0-A96A-3D66-F2E1-C8875E370EEE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
@@ -111,6 +114,9 @@
     <ClInclude Include="src\Engine\Renderer\Buffer.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\Camera.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Renderer\Framebuffer.h">
       <Filter>src\Engine\Renderer</Filter>
     </ClInclude>
@@ -140,6 +146,18 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\VertexArray.h">
       <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Scnene\Components.h">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Scnene\Entity.h">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Scnene\Scene.h">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Scnene\ScriptableEntity.h">
+      <Filter>src\Engine\Scnene</Filter>
     </ClInclude>
     <ClInclude Include="src\Enginepch.h">
       <Filter>src</Filter>
@@ -1419,9 +1437,10 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Scnene\Scene.h" />
-    <ClInclude Include="src\Engine\Scnene\Components.h" />
-    <ClInclude Include="src\Engine\Scnene\Entity.h" />
+    <ClInclude Include="src\Engine\Debug\Instrumentor.h" />
+    <ClInclude Include="src\Engine\Scnene\SceneCamera.h">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Core\Application.cpp">
@@ -1475,6 +1494,12 @@
     <ClCompile Include="src\Engine\Renderer\VertexArray.cpp">
       <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Scnene\Entity.cpp">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Scnene\Scene.cpp">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClCompile>
     <ClCompile Include="src\Enginepch.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1508,7 +1533,8 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Scnene\Scene.cpp" />
-    <ClCompile Include="src\Engine\Scnene\Entity.cpp" />
+    <ClCompile Include="src\Engine\Scnene\SceneCamera.cpp">
+      <Filter>src\Engine\Scnene</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

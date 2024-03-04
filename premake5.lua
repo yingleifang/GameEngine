@@ -1,6 +1,6 @@
 workspace "GameEngine"
     architecture "x64"
-    startproject "Sandbox"
+    startproject "EngineEditor"
 
     configurations{
         "Debug",
@@ -17,10 +17,12 @@ IncludeDir['ImGui'] = "GameEngine/vendor/imgui"
 IncludeDir['glm'] = "GameEngine/vendor/glm"
 IncludeDir['stb_image'] = "GameEngine/vendor/stb_image"
 IncludeDir['entt'] = "GameEngine/vendor/entt/include"
+IncludeDir['box2d'] = "GameEngine/vendor/box2d/include"
 
 include "GameEngine/vendor/GLFW"
 include "GameEngine/vendor/Glad"
 include "GameEngine/vendor/imgui"
+include "GameEngine/vendor/box2d"
 
 project "GameEngine"
     location "GameEngine"    
@@ -52,14 +54,16 @@ project "GameEngine"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
-        "%{IncludeDir.entt}"
+        "%{IncludeDir.entt}",
+        "%{IncludeDir.box2d}"
         }
 
     links{
         "GLFW",
         "Glad",
         "imGui",
-        "opengl32.lib"
+        "opengl32.lib",
+        "box2d"
     }
 
     filter "system:windows"
@@ -86,8 +90,9 @@ project "GameEngine"
         runtime "Release"
         optimize "on"
     
-project "Sandbox"
-    location "Sandbox"
+
+project "EngineEditor"
+    location "EngineEditor"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -133,3 +138,4 @@ project "Sandbox"
         defines "ENGINE_DIST"
         runtime "Release"
         optimize "on"
+
